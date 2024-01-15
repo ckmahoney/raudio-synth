@@ -3,6 +3,7 @@ use std::i16;
 
 mod waveforms;
 mod composer;
+mod wavelets;
 
 fn main() {
     let filename = "random_sequence.wav";
@@ -17,4 +18,6 @@ fn main() {
     for sample in sequence {
         writer.write_sample((sample * i16::MAX as f32) as i16).unwrap();
     }
+
+    wavelets::main(440.0)
 }
