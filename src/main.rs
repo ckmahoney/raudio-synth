@@ -5,53 +5,60 @@ mod synth_config;
 mod waveforms;
 mod wavelets;
 
-use crate::synth_config::SynthConfig;
+use synth_config::SynthConfig;
+use waveforms::Ugen;
+use std::collections::HashMap;
 
-fn h(config: &SynthConfig, shape: i8, fp: &str) {
-    let sample_rate = 96000;
-    let spec = hound::WavSpec {
-        channels: 1,
-        sample_rate: sample_rate,
-        bits_per_sample: 32,
-        sample_format: hound::SampleFormat::Int,
-    };
-    let filename = fp.to_owned() + ".wav";
-    let mut writer = hound::WavWriter::create(filename, spec).unwrap();
-    let mut ts: Vec<u32> = Vec::new();
-    for i in 0..sample_rate { 
-        ts.push(i) 
-    };
+const TEST_AUDIO_DIR: &str = "test-render";
 
-    let sequence = waveforms::of(config, ts, sample_rate, shape);
-    for sample in sequence {
-        writer.write_sample(sample).unwrap();
-    }
-
-    wavelets::main(440.0)
+fn test_audio_name(label:&str) -> String {
+    format!("{}/{}.wav", TEST_AUDIO_DIR, label)
 }
 
 
+fn render_ugen(config: &SynthConfig, ugen: &Ugen, label: &str) -> String {
+    let dur_cycles = 4;
+    let spec = hound::WavSpec {
+        channels: 1,
+        sample_rate: config.sample_rate,
+        bits_per_sample: 32,
+        sample_format: hound::SampleFormat::Int,
+    };
+    let name: String = format!("{}_sample-rate_{}_channels_{}", label, spec.sample_rate, spec.channels);
+    let filename = test_audio_name(&name);
+    let mut writer = hound::WavWriter::create(filename.clone(), spec).unwrap();
+    let mut ts: Vec<u32> = Vec::new();
+
+    for i in 0..(dur_cycles * config.sample_rate) { 
+        ts.push(i) 
+    };
+
+    let sequence = waveforms::render(config, ts, config.sample_rate, ugen);
+    for sample in sequence {
+        writer.write_sample(sample).unwrap();
+    }
+    writer.finalize().unwrap();
+    filename
+}
+
+
+fn test_write_waveforms(config: &SynthConfig) {
+    let mut shapes_map: HashMap<String, Ugen> = HashMap::new();
+    shapes_map.insert(String::from("sawtooth"), waveforms::sawtooth);
+    shapes_map.insert(String::from("triangle"), waveforms::triangle);
+    shapes_map.insert(String::from("sine"), waveforms::sine);
+
+    for (name, func) in &shapes_map {
+        let filename = render_ugen(&config, func, name);
+        println!("Completed writing test waveform {}", filename);
+    }
+}
+
 fn main() {
+    let _melody = [
+        400, 600, 500, 700, 800, 600, 500, 400 
+    ];
     let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0);
-
-
-    let arg_matches = App::new("My App")
-        .arg(Arg::with_name("waveshape")
-            .short('w')
-            .long("waveshape")
-            .takes_value(true)
-            .help("Select the waveshape to render. Choose from 0, 1, or 2."))
-        .arg(Arg::with_name("filename")
-            .short('f')
-            .long("filename")
-            .takes_value(true)
-            .help("Sets the output filename"))
-        .get_matches();
-
-    let shape: i8 = arg_matches.value_of("waveshape").unwrap_or("0").parse::<i8>().unwrap_or(3);
-    let filename = arg_matches.value_of("filename").unwrap_or("output.wav");
-
-    println!("Using shape ${:?}", shape);
-
-    h(&config, shape, filename);
+    
+    test_write_waveforms(&config);
 }

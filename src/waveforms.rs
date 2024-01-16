@@ -1,6 +1,8 @@
 use crate::synth_config::SynthConfig;
 use std::f32::consts::PI;
-use rand::prelude::*;
+// use rand::prelude::*;
+
+pub type Ugen = fn(&SynthConfig, u32, f32, Option<f32>) -> f32;
 
 pub fn sine(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> f32 {
     let adjusted_freq = freq + config.tuning_offset_hz;
@@ -15,6 +17,15 @@ pub fn sawtooth(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f
     2.0 * (pos - bias_val) * config.amplitude_scaling
 }
 
+
+
+pub fn triangle(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> f32 {
+    let adjusted_freq = freq + config.tuning_offset_hz;
+    let phase = t as f32 * adjusted_freq / config.sample_rate as f32;
+    2.0 * phase.abs().rem_euclid(2.0) - 1.0
+}
+
+/*
 pub fn pulsewidth(config: &SynthConfig, t: u32, freq: f32, width: f32, bias: Option<f32>) -> f32 {
     let adjusted_freq = freq + config.tuning_offset_hz;
     let phase = t as f32 * adjusted_freq / config.sample_rate as f32;
@@ -24,13 +35,6 @@ pub fn pulsewidth(config: &SynthConfig, t: u32, freq: f32, width: f32, bias: Opt
     } else {
         (-1.0 + bias_val) * config.amplitude_scaling
     }
-}
-
-
-pub fn triangle(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> f32 {
-    let adjusted_freq = freq + config.tuning_offset_hz;
-    let phase = t as f32 * adjusted_freq / config.sample_rate as f32;
-    2.0 * phase.abs().rem_euclid(2.0) - 1.0
 }
 
 pub fn white_noise(config: &SynthConfig) -> f32 {
@@ -82,6 +86,18 @@ pub fn of(config: &SynthConfig, ts: Vec<u32>, sr:u32, shape: i8) -> Vec<f32> {
     .join("\n");
     println!("For shape ${:?} \nit has these samples", shape);
     println!("{:?}",xx);
+    samples
+}
+ */
+
+pub fn render(config: &SynthConfig, ts: Vec<u32>, sr:u32, ugen: &Ugen) -> Vec<f32> {
+    let mut samples: Vec<f32> = Vec::new();
+    let freq: f32 = 400.0;
+    let amp = 0.1;
+    for t in ts {
+        let sample = amp * ugen(config, t, freq, Some(0.5));
+        samples.push(sample);
+    }
     samples
 }
 
