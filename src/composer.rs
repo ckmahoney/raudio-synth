@@ -1,6 +1,7 @@
 use crate::waveforms::{sawtooth, triangle, square};
 use rand::{Rng, thread_rng};
 
+#[allow(dead_code)]
 pub fn compose_sequence(duration_secs: f32, sample_rate: u32) -> Vec<f32> {
     let mut sequence = Vec::new();
     let mut rng = thread_rng();
