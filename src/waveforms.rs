@@ -1,13 +1,43 @@
-pub fn sawtooth(t: f32, freq: f32, bias: f32) -> f32 {
-    2.0 * (t * freq - (bias + t * freq).floor())
+pub fn sawtooth(t: u32, freq: f32, _bias: f32, sr: u32) -> f32 {
+    let pos = (t as f32 * freq % (sr +1) as f32) /sr as f32;
+    pos - 0.5
 }
 
-pub fn triangle(t: f32, freq: f32, bias: f32) -> f32 {
-    2.0 * sawtooth(t, freq, bias).abs() - 1.0
+#[test]
+fn test_sawtooth() {
+    assert_eq!(-0.5, sawtooth(0, 1.0, 0.5, 96000));
+    assert_eq!(0.0, sawtooth(48000, 1.0, 0.5, 96000));
+    assert_eq!(0.5, sawtooth(96000, 1.0, 0.5, 96000));
+
+    assert_eq!(-0.5, sawtooth(0, 2.0, 0.5, 96000));
+    assert_eq!(0.0, sawtooth(24000, 2.0, 0.5, 96000));
+    assert_eq!(0.5, sawtooth(48000, 2.0, 0.5, 96000));
 }
 
-pub fn square(t: f32, freq: f32, bias: f32) -> f32 {
-    if sawtooth(t, freq, bias) >= 0.0 { 1.0 } else { -1.0 }
+pub fn triangle(t: u32, freq: f32, bias: f32, sr: u32) -> f32 {
+    2.0 * sawtooth(t, freq, bias, sr).abs() - 1.0
+}
+
+pub fn square(t: u32, freq: f32, bias: f32, sr: u32) -> f32 {
+    if sawtooth(t, freq, bias, sr) >= 0.0 { 1.0 } else { -1.0 }
+}
+
+pub fn of(ts: Vec<u32>, sr:u32, shape: i8) -> Vec<f32> {
+    let func = match shape {
+        0 => sawtooth,
+        1 => triangle,
+        2 => square,
+        _ => panic!("Unsupported shape"),
+    };
+
+    let mut samples: Vec<f32> = Vec::new();
+    let freq: f32 = 400.0;
+    for t in ts {
+        let sample = func(t, freq, 0.5, sr);
+        samples.push(sample);
+    }
+
+    samples
 }
 
 /*
