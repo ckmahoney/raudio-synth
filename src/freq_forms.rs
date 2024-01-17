@@ -1,6 +1,37 @@
 use std::f32::consts::PI;
 use crate::synth_config::SynthConfig;
 
+use std::collections::HashMap;
+
+struct PhaseTracker {
+    phases: HashMap<i32, f32>, // Rounded frequency as key
+    precision: f32,            // Rounding precision
+}
+
+impl PhaseTracker {
+    pub fn new(precision: f32) -> Self {
+        PhaseTracker {
+            phases: HashMap::new(),
+            precision,
+        }
+    }
+
+    fn round_frequency(&self, freq: f32) -> i32 {
+        (freq / self.precision).round() as i32
+    }
+
+    pub fn get_phase(&self, freq: f32) -> f32 {
+        let key = self.round_frequency(freq);
+        *self.phases.get(&key).unwrap_or(&0.0)
+    }
+
+    pub fn update_phase(&mut self, freq: f32, phase: f32) {
+        let key = self.round_frequency(freq);
+        self.phases.insert(key, phase);
+    }
+}
+
+
 pub fn normalize_waveform(samples: &mut [f32]) {
     let (min, max) = samples.iter().fold((f32::MAX, f32::MIN), |(min, max), &val| {
         (min.min(val), max.max(val))
