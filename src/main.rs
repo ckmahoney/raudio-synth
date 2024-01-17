@@ -45,23 +45,44 @@ fn render_ugen(config: &SynthConfig, ugen: &Ugen, label: &str) -> String {
 }
 
 
-fn test_write_waveforms(config: &SynthConfig) {
+fn test_write_time_forms(config: &SynthConfig) {
     let mut shapes_map: HashMap<String, Ugen> = HashMap::new();
     shapes_map.insert(String::from("sawtooth"), time_forms::sawtooth);
     shapes_map.insert(String::from("triangle"), time_forms::triangle);
     shapes_map.insert(String::from("sine"), time_forms::sine);
 
     for (name, func) in &shapes_map {
-        let filename = render_ugen(&config, func, name);
+        let label = format!("time_form-{}", name);
+        let filename = render_ugen(&config, func, &label);
         println!("Completed writing test waveform {}", filename);
     }
+}
+
+
+
+fn test_write_freq_forms(config: &SynthConfig) {
+    let mut shapes_map: HashMap<String, Ugen> = HashMap::new();
+    shapes_map.insert(String::from("sawtooth"), freq_forms::sawtooth);
+    shapes_map.insert(String::from("triangle"), freq_forms::triangle);
+    shapes_map.insert(String::from("sine"), freq_forms::sine);
+
+    for (name, func) in &shapes_map {
+        let label = format!("freq_form-{}", name);
+        let filename = render_ugen(&config, func, &label);
+        println!("Completed writing test waveform {}", filename);
+    }
+}
+
+fn test_write_waveforms(config: &SynthConfig) {
+    test_write_time_forms(&config);
+    test_write_freq_forms(&config);
 }
 
 fn main() {
     let _melody = [
         400, 600, 500, 700, 800, 600, 500, 400 
     ];
-    let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0);
+    let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0, 1.0);
     
     test_write_waveforms(&config);
 }

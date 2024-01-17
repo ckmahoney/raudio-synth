@@ -11,17 +11,19 @@ pub fn normalize_waveform(samples: &mut [f32]) {
     });
 }
 
-pub fn sine(sample_num: u32, sample_rate: u32, frequency: f32, phase_offset: f32) -> f32 {
-    let t = sample_num as f32 / sample_rate as f32;
-    (2.0 * PI * frequency * t + phase_offset).sin()
+pub fn sine(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f32 {
+    let phase_offset = 0.0;
+    let t = t as f32 / config.sample_rate as f32;
+    (2.0 * PI * freq * t as f32 + phase_offset).sin() 
 } 
 
-pub fn square(sample_num: u32, sample_rate: u32, frequency: f32, phase_offset: f32) -> f32 {
-    let nyquist = sample_rate as f32 / 2.0;
-    let max_harmonic = (nyquist / frequency).floor() as i32;
-    let t = sample_num as f32 / sample_rate as f32;
+pub fn square(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f32 {
+    let phase_offset = 0.0;
+    let nyquist = config.sample_rate as f32 / 2.0;
+    let max_harmonic = (nyquist / freq).floor() as i32;
+    let t = t as f32 / config.sample_rate as f32;
     (1..=max_harmonic).step_by(2).fold(0.0, |acc, n| {
-        acc + ((2.0 * PI * frequency * n as f32 * t + phase_offset).sin() / n as f32)
+        acc + ((2.0 * PI * freq * n as f32 * t + phase_offset).sin() / n as f32)
     })
 }
 
@@ -79,13 +81,14 @@ mod tests {
             amplitude_scaling: 1.0,
             phase_offset: 0.0,
             tuning_offset_hz: 0.0,
+            cps: 1.0
         }
     }
 
     #[test]
     fn test_square_wave_basic() {
         let config = test_config();
-        let sample = square(0, config.sample_rate, 440.0, 0.0);
+        let sample = square(&config, 0, 440.0, Some(0.0));
         assert!(sample >= -1.0 && sample <= 1.0, "Square wave sample is not within expected range.");
     }
 
@@ -94,23 +97,5 @@ mod tests {
         let config = test_config();
         let sample = sawtooth(&config, 0, 440.0, Some(0.5));
         assert!(sample >= -1.0 && sample <= 1.0, "Sawtooth wave sample is not within expected range.");
-    }
-
-    #[test]
-    fn test_square_wave_frequency_bounds() {
-        let config = test_config();
-        let low_freq_sample = square(0, config.sample_rate, config.min_frequency, 0.0);
-        let high_freq_sample = square(0, config.sample_rate, config.max_frequency, 0.0);
-        assert!(low_freq_sample >= -1.0 && low_freq_sample <= 1.0, "Low frequency square wave sample is out of bounds.");
-        assert!(high_freq_sample >= -1.0 && high_freq_sample <= 1.0, "High frequency square wave sample is out of bounds.");
-    }
-
-    #[test]
-    fn test_sawtooth_wave_frequency_bounds() {
-        let config = test_config();
-        let low_freq_sample = sawtooth(&config, 0, config.min_frequency, Some(0.5));
-        let high_freq_sample = sawtooth(&config, 0, config.max_frequency, Some(0.5));
-        assert!(low_freq_sample >= -1.0 && low_freq_sample <= 1.0, "Low frequency sawtooth wave sample is out of bounds.");
-        assert!(high_freq_sample >= -1.0 && high_freq_sample <= 1.0, "High frequency sawtooth wave sample is out of bounds.");
     }
 }

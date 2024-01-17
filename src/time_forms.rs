@@ -17,14 +17,11 @@ pub fn sawtooth(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f
     2.0 * (pos - bias_val) * config.amplitude_scaling
 }
 
-
-
 pub fn triangle(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> f32 {
     let adjusted_freq = freq + config.tuning_offset_hz;
     let phase = t as f32 * adjusted_freq / config.sample_rate as f32;
     2.0 * phase.abs().rem_euclid(2.0) - 1.0
 }
-
 
 pub fn render(config: &SynthConfig, ts: Vec<u32>, sr:u32, ugen: &Ugen) -> Vec<f32> {
     let mut samples: Vec<f32> = Vec::new();
@@ -52,7 +49,7 @@ mod tests {
 
     #[test]
     fn test_sine() {
-        let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0);
+        let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0, 1.0);
         let epsilon = 1e-4;
 
         // Test at various points in the sine wave cycle
@@ -65,7 +62,7 @@ mod tests {
 
     #[test]
     fn test_sawtooth() {
-        let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0);
+        let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0, 1.0);
         let epsilon = 1e-4;
     
         assert_eq!(-1.0, sawtooth(&config, 0, 1.0, None));
