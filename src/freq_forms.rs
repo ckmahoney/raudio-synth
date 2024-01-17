@@ -46,7 +46,7 @@ pub fn sine(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f32 {
     let phase_offset = 0.0;
     let t = t as f32 / config.sample_rate as f32;
     (2.0 * PI * freq * t as f32 + phase_offset).sin() 
-} 
+}
 
 pub fn square(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f32 {
     let phase_offset = 0.0;

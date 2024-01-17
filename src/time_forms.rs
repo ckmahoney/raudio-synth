@@ -23,7 +23,7 @@ pub fn triangle(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> 
     2.0 * phase.abs().rem_euclid(2.0) - 1.0
 }
 
-pub fn render(config: &SynthConfig, ts: Vec<u32>, sr:u32, ugen: &Ugen) -> Vec<f32> {
+pub fn render_test(config: &SynthConfig, ts: Vec<u32>, sr:u32, ugen: &Ugen) -> Vec<f32> {
     let mut samples: Vec<f32> = Vec::new();
     let freq: f32 = 400.0;
     let amp = 0.1;
