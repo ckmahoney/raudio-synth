@@ -1,12 +1,15 @@
-use clap::{App, Arg};
+#![allow(dead_code)]
+#![allow(unused_variables)]
 use hound;
 
+mod freq_forms;
+mod time_forms;
 mod synth_config;
-mod waveforms;
 mod wavelets;
 
+
 use synth_config::SynthConfig;
-use waveforms::Ugen;
+use time_forms::Ugen;
 use std::collections::HashMap;
 
 const TEST_AUDIO_DIR: &str = "test-render";
@@ -33,7 +36,7 @@ fn render_ugen(config: &SynthConfig, ugen: &Ugen, label: &str) -> String {
         ts.push(i) 
     };
 
-    let sequence = waveforms::render(config, ts, config.sample_rate, ugen);
+    let sequence = time_forms::render(config, ts, config.sample_rate, ugen);
     for sample in sequence {
         writer.write_sample(sample).unwrap();
     }
@@ -44,9 +47,9 @@ fn render_ugen(config: &SynthConfig, ugen: &Ugen, label: &str) -> String {
 
 fn test_write_waveforms(config: &SynthConfig) {
     let mut shapes_map: HashMap<String, Ugen> = HashMap::new();
-    shapes_map.insert(String::from("sawtooth"), waveforms::sawtooth);
-    shapes_map.insert(String::from("triangle"), waveforms::triangle);
-    shapes_map.insert(String::from("sine"), waveforms::sine);
+    shapes_map.insert(String::from("sawtooth"), time_forms::sawtooth);
+    shapes_map.insert(String::from("triangle"), time_forms::triangle);
+    shapes_map.insert(String::from("sine"), time_forms::sine);
 
     for (name, func) in &shapes_map {
         let filename = render_ugen(&config, func, name);
