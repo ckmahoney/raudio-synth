@@ -1,3 +1,5 @@
+//! Generation of conventional waveforms using time-domain
+
 use crate::synth_config::SynthConfig;
 use std::f32::consts::PI;
 // use rand::prelude::*;

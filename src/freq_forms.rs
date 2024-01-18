@@ -1,3 +1,4 @@
+//! Generation of conventional waveforms using frequency-domain
 use std::f32::consts::PI;
 use crate::synth_config::SynthConfig;
 

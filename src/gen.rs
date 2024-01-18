@@ -1,5 +1,8 @@
+//! Optimized generation of popular waveforms using vector rotation
+//! 
 extern crate num_complex;
 use num_complex::Complex;
+use crate::synth_config::SynthConfig;
 
 struct Harmonic {
     amplitude: f64,
@@ -13,7 +16,7 @@ impl Harmonic {
     }
 }
 
-struct WaveformGenerator {
+pub struct WaveformGenerator {
     sample_rate: f64,
     frequency: f64,
     harmonics: Vec<Harmonic>,
@@ -71,6 +74,53 @@ impl WaveformGenerator {
         self.time += 1.0 / self.sample_rate;
         sample
     }
+}
+pub fn sine_wave_generator(config: &SynthConfig, freq: f32) -> WaveformGenerator {
+    let num_harmonics = 1; // Only the fundamental frequency
+    let mut generator = WaveformGenerator::new(config.sample_rate as f64, freq as f64, num_harmonics);
+    generator.set_harmonic(0, 1.0, 0.0, Box::new(|_| 1.0)); // Fundamental frequency with amplitude 1
+    generator
+}
+
+pub fn square_wave_generator(config: &SynthConfig, freq: f32) -> WaveformGenerator {
+    let nyquist = config.sample_rate as f32 / 2.0;
+    let max_harmonic = (nyquist / freq).floor() as usize;
+    let num_harmonics = max_harmonic / 2; // Considering only odd harmonics
+    let mut generator = WaveformGenerator::new(config.sample_rate as f64, freq as f64, num_harmonics);
+
+    for n in (1..=max_harmonic).step_by(2) {
+        let amplitude = 1.0 / n as f64;
+        generator.set_harmonic(n / 2, amplitude, 0.0, Box::new(move |_| amplitude));
+    }
+
+    generator
+}
+
+pub fn sawtooth_wave_generator(config: &SynthConfig, freq: f32) -> WaveformGenerator {
+    let nyquist = config.sample_rate as f32 / 2.0;
+    let max_harmonic = (nyquist / freq).floor() as usize;
+    let mut generator = WaveformGenerator::new(config.sample_rate as f64, freq as f64, max_harmonic);
+
+    for n in 1..=max_harmonic {
+        let amplitude = 1.0 / n as f64;
+        generator.set_harmonic(n - 1, amplitude, 0.0, Box::new(move |_| amplitude));
+    }
+
+    generator
+}
+
+pub fn triangle_wave_generator(config: &SynthConfig, freq: f32) -> WaveformGenerator {
+    let nyquist = config.sample_rate as f32 / 2.0;
+    let max_harmonic = (nyquist / freq).floor() as usize;
+    let num_harmonics = max_harmonic / 2;
+    let mut generator = WaveformGenerator::new(config.sample_rate as f64, freq as f64, num_harmonics);
+
+    for n in (1..=max_harmonic).step_by(2) {
+        let amplitude = 1.0 / (n as f64).powi(2);
+        generator.set_harmonic(n / 2, amplitude, 0.0, Box::new(move |_| amplitude));
+    }
+
+    generator
 }
 
 #[cfg(test)]
