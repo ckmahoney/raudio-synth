@@ -1,4 +1,6 @@
 
+# raudio-synth
+
 To include raudio-synth in your Rust project, add the following to your Cargo.toml file:
 
 ```toml
