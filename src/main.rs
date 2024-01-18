@@ -1,4 +1,12 @@
-#![allow(dead_code)]
+mod setup_tests {
+    pub fn test_audio_name(label: &str) -> String {
+        format!("test-render/{}.wav", label)
+    }
+
+    pub fn generate_synth_config() -> ::synth_config::SynthConfig {
+        ::synth_config::SynthConfig::new(44100, 20.0, 20000.0, 1.0, 0.0, 0.0, 1.0)
+    }
+}#![allow(dead_code)]
 #![allow(unused_variables)]
 use rand::{thread_rng, Rng};
 use rand::seq::SliceRandom;
@@ -12,6 +20,7 @@ mod sequence;
 mod gen;
 
 use synth_config::SynthConfig;
+mod setup_tests;
     let dur_cycles = 4;
     let spec = hound::WavSpec {
         channels: 1,
