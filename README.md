@@ -1,13 +1,6 @@
 
 # raudio-synth
 
-To include raudio-synth in your Rust project, add the following to your Cargo.toml file:
-
-```toml
-[dependencies]
-raudio-synth = { git = "https://github.com/your-username/raudio-synth.git" }
-```
-
 ## Example <- COMMENT: great example, thanks
 
 The following example demonstrates how to generate a sine wave and output it to an audio buffer:
