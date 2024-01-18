@@ -1,5 +1,6 @@
 //! Optimized generation of popular waveforms using vector rotation
-//! 
+//! important, this does not work as intented. The contents here are the output of ChatGPT trying to do it.
+//! I appreciate the attempt.
 extern crate num_complex;
 use num_complex::Complex;
 use crate::synth_config::SynthConfig;
@@ -64,7 +65,7 @@ impl WaveformGenerator {
         }
     }
 
-    fn next_sample(&mut self) -> f64 {
+    pub fn next_sample(&mut self) -> f64 {
         let mut sample = 0.0;
         for i in 0..self.harmonics.len() {
             let envelope_value = (self.harmonics[i].envelope)(self.time);
