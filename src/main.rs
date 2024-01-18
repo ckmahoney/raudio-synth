@@ -20,7 +20,7 @@ use synth_config::SynthConfig;
         sample_format: hound::SampleFormat::Int,
     };
     let name: String = format!("{}_sample-rate_{}_channels_{}", label, spec.sample_rate, spec.channels);
-    let filename = test_audio_name(&name);
+    let filename = setup_tests::test_audio_name(&name);
     let mut writer = hound::WavWriter::create(filename.clone(), spec).unwrap();
     let mut ts: Vec<u32> = Vec::new();
 
@@ -77,8 +77,8 @@ fn test_write_freq_forms(config: &SynthConfig) {
     let mut triangle_gen = triangle_wave_generator(&config, frequency as f32);
 
     // Write each waveform to a WAV file
-    write_waveform_to_wav(&mut sine_gen, num_samples, &test_audio_name("optimized_sine"));
-    write_waveform_to_wav(&mut square_gen, num_samples, &test_audio_name("optimized_square"));
+    write_waveform_to_wav(&mut sine_gen, num_samples, &setup_tests::test_audio_name("optimized_sine"));
+    write_waveform_to_wav(&mut square_gen, num_samples, &setup_tests::test_audio_name("optimized_square"));
         sample_rate: 44100,
         bits_per_sample: 32,
         sample_format: hound::SampleFormat::Float,
@@ -102,7 +102,7 @@ fn write_sequence_to_file(config: &SynthConfig, sequence: &[f32], label: &str) {
 }
 
 fn main() {
-    let config = SynthConfig::new(96000, 20.0, 20000.0, 1.0, 0.0, 0.0, 1.0);
+    let config = setup_tests::generate_synth_config();
     
     // test_write_waveforms(&config);
     test_waveform_generator(&config);
