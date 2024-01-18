@@ -1,7 +1,7 @@
 
 # raudio-synth
 
-## Example <- COMMENT: great example, thanks
+## Example
 
 The following example demonstrates how to generate a sine wave and output it to an audio buffer:
 
@@ -26,7 +26,3 @@ let samples = render(&config, (0..44100).collect(), 44100, &generator.next_sampl
 ## Tests
 
 To run the unit tests for raudio-synth, execute:
-
-```shell
-cargo test
-```
