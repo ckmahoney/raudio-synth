@@ -1,5 +1,5 @@
 [package]
-name = "synth-kit"
+name = "raudio-synth"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,8 @@ rand = "0.8.3"
 num-complex = "0.4.4"
 clap = "3.1"
 symphonia= "0.5.3"
+
+
+[lib]
+name = "raudio_synth"
+path = "src/main.rs"

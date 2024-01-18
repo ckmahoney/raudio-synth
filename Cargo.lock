@@ -197,6 +197,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "raudio-synth"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "hound",
+ "num-complex",
+ "rand",
+ "symphonia",
+]
+
+[[package]]
 name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -332,17 +343,6 @@ checksum = "a450ca645b80d69aff8b35576cbfdc7f20940b29998202aab910045714c951f8"
 dependencies = [
  "symphonia-core",
  "symphonia-metadata",
-]
-
-[[package]]
-name = "synth-kit"
-version = "0.1.0"
-dependencies = [
- "clap",
- "hound",
- "num-complex",
- "rand",
- "symphonia",
 ]
 
 [[package]]
