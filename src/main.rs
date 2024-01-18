@@ -9,6 +9,7 @@ mod time_forms;
 mod synth_config;
 mod wavelets;
 mod sequence;
+mod gen;
 
 use synth_config::SynthConfig;
 use time_forms::Ugen;
