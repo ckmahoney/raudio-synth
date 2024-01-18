@@ -9,6 +9,7 @@ The following example demonstrates how to generate a sine wave and output it to 
 use raudio-synth::gen::sine_wave_generator;
 use raudio-synth::freq_forms::render;
 use raudio-synth::synth_config::SynthConfig;
+use hound;
 
 let config = SynthConfig {
     sample_rate: 44100,
@@ -21,6 +22,20 @@ let config = SynthConfig {
 };
 let mut generator = sine_wave_generator(&config, 440.0);
 let samples = render(&config, (0..44100).collect(), 44100, &generator.next_sample);
+
+// Writing the sine wave audio buffer to a WAV file using hound
+let spec = hound::WavSpec {
+    channels: 1,
+    sample_rate: config.sample_rate,
+    bits_per_sample: 16,
+    sample_format: hound::SampleFormat::Int,
+};
+
+let mut writer = hound::WavWriter::create("sine_wave.wav", spec).unwrap();
+for sample in samples.iter() {
+    writer.write_sample(*sample as i16).unwrap();
+}
+writer.finalize().unwrap();
 ```
 
 ## Tests
