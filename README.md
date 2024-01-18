@@ -8,7 +8,7 @@ To include raudio-synth in your Rust project, add the following to your Cargo.to
 raudio-synth = { git = "https://github.com/your-username/raudio-synth.git" }
 ```
 
-## Example
+## Example <- COMMENT: great example, thanks
 
 The following example demonstrates how to generate a sine wave and output it to an audio buffer:
 
@@ -24,8 +24,4 @@ let samples = render(&config, (0..44100).collect(), 44100, &generator.next_sampl
 
 ## Tests
 
-To run the unit tests for raudio-synth, execute the following command in your terminal:
-
-```bash
-cargo test
-```
+To run the unit tests for raudio-synth, execute:
