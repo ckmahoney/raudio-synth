@@ -15,4 +15,4 @@ symphonia= "0.5.3"
 
 [lib]
 name = "raudio_synth"
-path = "src/main.rs"
+path = "src/lib.rs"
