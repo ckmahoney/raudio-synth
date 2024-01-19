@@ -1,8 +1,5 @@
 mod common;
 
-use common::test_audio_name;
-use raudio_synth::synth_config::SynthConfig;
-
 use std::collections::HashMap;
 
 
@@ -15,7 +12,7 @@ fn test_render_time() {
     shapes_map.insert(String::from("sine"), raudio_synth::time_forms::sine);
 
     for (name, func) in &shapes_map {
-        let label = format!("time_form-{}", name);
+        let label = common::test_audio_name(&config, &format!("time_form_{}", name));
         let filename = raudio_synth::render::render_ugen(&config, func, &label);
         println!("Completed writing test waveform {}", filename);
     }
