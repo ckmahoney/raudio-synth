@@ -2,9 +2,8 @@
 
 use crate::synth_config::SynthConfig;
 use std::f32::consts::PI;
-// use rand::prelude::*;
+use crate::render::Ugen;
 
-pub type Ugen = fn(&SynthConfig, u32, f32, Option<f32>) -> f32;
 
 pub fn sine(config: &SynthConfig, t: u32, freq: f32, _bias: Option<f32>) -> f32 {
     let adjusted_freq = freq + config.tuning_offset_hz;
