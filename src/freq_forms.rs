@@ -69,7 +69,8 @@ pub fn sawtooth(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f
         let harmonic_bias = (n as f32 * bias.unwrap_or(0.5)).rem_euclid(1.0);
         sum += (2.0 * std::f32::consts::PI * adjusted_freq * n as f32 * t + config.phase_offset + harmonic_bias).sin() / n as f32;
     }
-    sum * config.amplitude_scaling
+    // Normalize the sum to keep it within -1.0 to 1.0
+    (sum / max_harmonic as f32) * config.amplitude_scaling
 }
 
 pub fn triangle(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f32 {
