@@ -41,3 +41,8 @@ writer.finalize().unwrap();
 ## Tests
 
 To run the unit tests for raudio-synth, execute:
+```
+cargo test
+```
+
+This will create a directory called `test-audio` and write some audio files inside. 
