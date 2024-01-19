@@ -1,57 +1,60 @@
 
 //! Methods for creating slices of useful waveforms. 
-//! Intended to be applied as a modulator to phase, amplitude, or frequency. 
+//! Intended to be applied as a modulator to phase, amplitude, or frequency.
 
-pub fn constant(n: usize, x: f32) -> Vec<f32> {
-    if x < -1.0 || x > 1.0 {
-        panic!("Modulation samples must be bound by an audio signal's range.")
-    }
-    vec![x; n]
+struct Envelope {
+    n: usize,
+    sample_rate: i32,
+    amp: f32,
+    flip: bool,
 }
 
-pub fn linear(n: usize, sample_rate: i32, amp: f32, flip: bool, slope: f32) -> Vec<f32> {
-    if slope == 0.0 {
-        panic!("Cannot have a slope of 0 for a linear envelope. Use amp = 0 instead.");
+impl Envelope {
+    fn new(n: usize, sample_rate: i32, amp: f32, flip: bool) -> Envelope {
+        Envelope { n, sample_rate, amp, flip }
     }
-    let mut samples: Vec<f32> = Vec::with_capacity(n);
-    let sign = if flip { -1.0 } else { 1.0 };
-    let mut max_val: f32 = 0.0;
-    for i in 0..n {
-        let value = amp + sign * slope * (i as f32 / sample_rate as f32);
-        max_val = max_val.max(value.abs());
-        samples.push(value);
-    }
-    samples.iter().map(|&x| x / max_val).collect()
-}
 
-pub fn power(n: usize, sample_rate: i32, amp: f32, base: f32, pow: f32, flip: bool) -> Vec<f32> {
-    if base == 0.0 || pow == 0.0 {
-        panic!("Cannot have a base or power of 0 for a power envelope. Use amp = 0 or amp = 1 instead.");
+    fn normalize_and_flip(&self, samples: &mut Vec<f32>) {
+        let max_val = samples.iter().fold(0.0, |max, &val| max.max(val.abs()));
+        let sign = if self.flip { -1.0 } else { 1.0 };
+        for sample in samples.iter_mut() {
+            *sample = sign * (*sample / max_val);
+        }
     }
-    let mut samples: Vec<f32> = Vec::with_capacity(n);
-    let sign = if flip { -1.0 } else { 1.0 };
-    let mut max_val: f32 = 0.0;
-    for i in 0..n {
-        let t = i as f32 / sample_rate as f32;
-        let value = sign * (amp + (t / base).powf(pow));
-        max_val = max_val.max(value.abs());
-        samples.push(value);
-    }
-    samples.iter().map(|&x| x / max_val).collect()
-}
 
-pub fn exponential(n: usize, sample_rate: i32, amp: f32, base: f32, pow: f32, flip: bool) -> Vec<f32> {
-    if base == 0.0 || pow == 0.0 {
-        panic!("Cannot have a base or power of 0 for an exponential envelope. Use amp = 0 or amp = 1 instead.");
+    pub fn constant(&self, x: f32) -> Vec<f32> {
+        vec![x; self.n]
     }
-    let mut samples: Vec<f32> = Vec::with_capacity(n);
-    let sign = if flip { -1.0 } else { 1.0 };
-    let mut max_val:f32 = 0.0;
-    for i in 0..n {
-        let t = i as f32 / sample_rate as f32;
-        let value = sign * (amp + base.powf(t * pow));
-        max_val = max_val.max(value.abs());
-        samples.push(value);
+
+    pub fn linear(&self, slope: f32) -> Vec<f32> {
+        let mut samples = Vec::with_capacity(self.n);
+        for i in 0..self.n {
+            let value = self.amp + slope * (i as f32 / self.sample_rate as f32);
+            samples.push(value);
+        }
+        self.normalize_and_flip(&mut samples);
+        samples
     }
-    samples.iter().map(|&x| x / max_val).collect()
+
+    pub fn power(&self, base: f32, pow: f32) -> Vec<f32> {
+        let mut samples = Vec::with_capacity(self.n);
+        for i in 0..self.n {
+            let t = i as f32 / self.sample_rate as f32;
+            let value = (self.amp + (t / base).powf(pow));
+            samples.push(value);
+        }
+        self.normalize_and_flip(&mut samples);
+        samples
+    }
+
+    pub fn exponential(&self, base: f32, pow: f32) -> Vec<f32> {
+        let mut samples = Vec::with_capacity(self.n);
+        for i in 0..self.n {
+            let t = i as f32 / self.sample_rate as f32;
+            let value = self.amp + base.powf(t * pow);
+            samples.push(value);
+        }
+        self.normalize_and_flip(&mut samples);
+        samples
+    }
 }
