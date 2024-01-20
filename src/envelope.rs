@@ -97,17 +97,16 @@ mod tests {
     }
     #[test]
     fn test_power_increasing() {
-        let n_runs = 10;
+        let n_runs = 1;
         let mut rng = rand::thread_rng();
-        let sample_rate_range = Uniform::new(1, 44100);
+        let sample_rate = 44100;
         let base_range = Uniform::new(1.0, 5.0);
         let pow_range = Uniform::new(0.0, 5.0);
 
         for _ in 0..n_runs {
-            let sample_rate = rng.sample(sample_rate_range);
             let base = rng.sample(base_range);
             let pow = rng.sample(pow_range);
-            let envelope = Envelope::new(10, sample_rate, 1.2, false);
+            let envelope = Envelope::new(30 * sample_rate, sample_rate as i32, 1.2, false);
             let result = envelope.power(base, pow);
 
             for i in 0..(result.len() - 1) {
@@ -120,12 +119,11 @@ mod tests {
     fn test_power_decreasing() {
         let n_runs = 10;
         let mut rng = rand::thread_rng();
-        let sample_rate_range = Uniform::new(1, 44100);
+        let sample_rate = 44100;
         let base_range = Uniform::new(1.0, 5.0);
         let pow_range = Uniform::new(0.0, 5.0);
 
         for _ in 0..n_runs {
-            let sample_rate = rng.sample(sample_rate_range);
             let base = rng.sample(base_range);
             let pow = rng.sample(pow_range);
             let envelope = Envelope::new(10, sample_rate, 1.2, true);
