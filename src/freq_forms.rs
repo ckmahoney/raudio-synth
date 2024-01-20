@@ -86,20 +86,6 @@ pub fn triangle(config: &SynthConfig, t: u32, freq: f32, bias: Option<f32>) -> f
     sum * config.amplitude_scaling
 }
 
-pub fn render(config: &SynthConfig, ts: Vec<u32>, sr: u32, ugen: fn(&SynthConfig, u32, f32, Option<f32>) -> f32) -> Vec<f32> {
-    let mut samples: Vec<f32> = Vec::with_capacity(ts.len());
-    let freq: f32 = 400.0;
-    let amp = 1.0;
-
-    for t in ts {
-        let sample = amp * ugen(config, t, freq, Some(0.5));
-        samples.push(sample);
-    }
-
-    normalize_waveform(&mut samples);
-
-    samples
-}
 
 #[cfg(test)]
 mod tests {

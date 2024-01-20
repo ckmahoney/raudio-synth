@@ -6,3 +6,4 @@ pub mod synth_config;
 pub mod render;
 pub mod gen;
 pub mod sequence;
+pub mod envelope;
