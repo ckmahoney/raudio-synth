@@ -8,7 +8,7 @@ pub fn render_ugen(config: &SynthConfig, ugen: &Ugen, filename: &str) -> String 
         channels: 1,
         sample_rate: config.sample_rate,
         bits_per_sample: 32,
-        sample_format: hound::SampleFormat::Int,
+        sample_format: hound::SampleFormat::Float,
     };
     let mut writer = hound::WavWriter::create(filename, spec).unwrap();
     let mut ts: Vec<u32> = Vec::new();
